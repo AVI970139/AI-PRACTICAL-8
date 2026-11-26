@@ -1,0 +1,44 @@
+# Run: python P8_mini_ai_classifier.py
+# Library: none. Only plain Python 3
+
+import re
+
+# Keyword-based Sentiment Classifier with Explainable Feature Weights
+POSITIVE_WORDS = {"good": 2, "great": 3, "awesome": 3, "fast": 2, "love": 3, "happy": 2}
+NEGATIVE_WORDS = {"bad": -2, "slow": -2, "terrible": -3, "hate": -3, "poor": -2, "broken": -3}
+
+def classify_and_explain(text):
+    tokens = re.findall(r"[a-z]+", text.lower())
+    score = 0
+    explanations = []
+
+    for word in tokens:
+        if word in POSITIVE_WORDS:
+            w = POSITIVE_WORDS[word]
+            score += w
+            explanations.append(f"+{w} ('{word}')")
+        elif word in NEGATIVE_WORDS:
+            w = NEGATIVE_WORDS[word]
+            score += w
+            explanations.append(f"{w} ('{word}')")
+
+    label = "POSITIVE" if score > 0 else ("NEGATIVE" if score < 0 else "NEUTRAL")
+    return label, score, explanations
+
+if __name__ == "__main__":
+    samples = [
+        "The product is great and delivery was fast!",
+        "Terrible service, the item arrived broken and slow.",
+        "The package arrived today."
+    ]
+    print("--- Mini-AI Explainable Sentiment Classifier ---")
+    for s in samples:
+        label, score, reasons = classify_and_explain(s)
+        print(f"\nInput: '{s}'")
+        print(f"Prediction: {label} (Score: {score})")
+        print(f"Explainability: {', '.join(reasons) if reasons else 'No sentiment keywords found'}")
+
+    print("\n--- Ethics & Explainability Report ---")
+    print("1. Explainability: Token weights explicitly show why a label was chosen.")
+    print("2. Bias & Fairness: Rule-based lexicons may misinterpret sarcasm or regional slang.")
+    print("3. Privacy: Text inputs are processed locally without storing user PII.")
